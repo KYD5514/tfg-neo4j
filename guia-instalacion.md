@@ -17,7 +17,7 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 1. **Clonar el repositorio:**
 
    ```bash
-   git clone https://github.com/fevame/tfg-neo4j-kafka.git
+   git clone https://github.com/KYD5514/tfg-neo4j.git
    cd tfg-neo4j
    ```
 
@@ -39,7 +39,7 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 
 4. **Creación de las bases de datos:**
 
-   ```docker exec -it neo4j-setup python /scripts/setup/setup_dbs.py
+   ```docker exec -it neo4j-setup python ./scripts/setup/setup_dbs.py
 
    ```
 
@@ -59,7 +59,6 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 
 ```
 .
-├── README.md
 ├── docker-compose.yml
 ├── guia-instalacion.md
 ├── certs
@@ -112,7 +111,7 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 │   │   └── modelo_bbdd.cypher
 │   │   └── setup_bds.py
 ├── plugins
-│   └── graph-data-science.jar
+    └── graph-data-science.jar
 
 ```
 
