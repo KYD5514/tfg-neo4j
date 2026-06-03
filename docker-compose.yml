@@ -1,0 +1,640 @@
+networks:
+  sevilla:
+    driver: bridge
+
+services:
+  # --- SERVIDOR FOG1.a: Contiene datos del nodo Fog1 ---
+  neo4j-fog1-a:
+    image: neo4j:enterprise
+    hostname: fog1-a
+    container_name: fog1-a
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-1
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog1-a:6000, fog1-b:6000, fog1-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog1-a:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog1-a:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog1-a:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7474
+
+    volumes:
+      - ./data/fog1-a:/data
+      - ./logs/fog1-a:/logs
+      - ./import:/import
+      - ./certs/bolt/fog1-a:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG1.b: Contiene datos del nodo Fog1 ---
+  neo4j-fog1-b:
+    image: neo4j:enterprise
+    hostname: fog1-b
+    container_name: fog1-b
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-1
+    ports:
+      - "7475:7474"
+      - "7688:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog1-a:6000, fog1-b:6000, fog1-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog1-b:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog1-b:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog1-b:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7475
+
+    volumes:
+      - ./data/fog1-b:/data
+      - ./logs/fog1-b:/logs
+      - ./import:/import
+      - ./certs/bolt/fog1-b:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG1.c: Contiene datos del nodo Fog1 ---
+  neo4j-fog1-c:
+    image: neo4j:enterprise
+    hostname: fog1-c
+    container_name: fog1-c
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-1
+    ports:
+      - "7476:7474"
+      - "7689:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog1-a:6000, fog1-b:6000, fog1-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog1-c:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog1-c:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog1-c:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7476
+
+    volumes:
+      - ./data/fog1-c:/data
+      - ./logs/fog1-c:/logs
+      - ./import:/import
+      - ./certs/bolt/fog1-c:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG1.d: (para añadir "en caliente") ---
+  # No arranca por defecto: se inicia con --profile scaleout
+  neo4j-fog1-d:
+    profiles: ["scaleout"]
+    image: neo4j:enterprise
+    hostname: fog1-d
+    container_name: fog1-d
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-1
+    ports:
+      - "7477:7474"
+      - "7690:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog1-a:6000, fog1-b:6000, fog1-c:6000
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog1-d:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog1-d:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog1-d:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7477
+
+    volumes:
+      - ./data/fog1-d:/data
+      - ./logs/fog1-d:/logs
+      - ./import:/import
+      - ./certs/bolt/fog1-d:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG2.a: Contiene datos del nodo Fog2 ---
+  neo4j-fog2-a:
+    image: neo4j:enterprise
+    hostname: fog2-a
+    container_name: fog2-a
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-2
+    ports:
+      - "7478:7474"
+      - "7691:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog2-a:6000, fog2-b:6000, fog2-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog2-a:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog2-a:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog2-a:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7478
+
+    volumes:
+      - ./data/fog2-a:/data
+      - ./logs/fog2-a:/logs
+      - ./import:/import
+      - ./certs/bolt/fog2-a:/var/lib/neo4j/certificates/bolt
+
+    # --- SERVIDOR FOG2.b: Contiene datos del nodo Fog2 ---
+  neo4j-fog2-b:
+    image: neo4j:enterprise
+    hostname: fog2-b
+    container_name: fog2-b
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-2
+    ports:
+      - "7479:7474"
+      - "7692:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog2-a:6000, fog2-b:6000, fog2-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog2-b:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog2-b:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog2-b:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7479
+
+    volumes:
+      - ./data/fog2-b:/data
+      - ./logs/fog2-b:/logs
+      - ./import:/import
+      - ./certs/bolt/fog2-b:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG2.c: Contiene datos del nodo Fog2 ---
+  neo4j-fog2-c:
+    image: neo4j:enterprise
+    hostname: fog2-c
+    container_name: fog2-c
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-2
+    ports:
+      - "7480:7474"
+      - "7693:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog2-a:6000, fog2-b:6000, fog2-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog2-c:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog2-c:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog2-c:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7480
+
+    volumes:
+      - ./data/fog2-c:/data
+      - ./logs/fog2-c:/logs
+      - ./import:/import
+      - ./certs/bolt/fog2-c:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG3.a: Contiene datos del nodo Fog3 ---
+  neo4j-fog3-a:
+    image: neo4j:enterprise
+    hostname: fog3-a
+    container_name: fog3-a
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-3
+    ports:
+      - "7481:7474"
+      - "7694:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog3-a:6000, fog3-b:6000, fog3-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog3-a:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog3-a:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog3-a:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7481
+
+    volumes:
+      - ./data/fog3-a:/data
+      - ./logs/fog3-a:/logs
+      - ./import:/import
+      - ./certs/bolt/fog3-a:/var/lib/neo4j/certificates/bolt
+
+    # --- SERVIDOR FOG3.b: Contiene datos del nodo Fog3 ---
+  neo4j-fog3-b:
+    image: neo4j:enterprise
+    hostname: fog3-b
+    container_name: fog3-b
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-3
+    ports:
+      - "7482:7474"
+      - "7695:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog3-a:6000, fog3-b:6000, fog3-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog3-b:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog3-b:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog3-b:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7482
+
+    volumes:
+      - ./data/fog3-b:/data
+      - ./logs/fog3-b:/logs
+      - ./import:/import
+      - ./certs/bolt/fog3-b:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR FOG3.c: Contiene datos del nodo Fog3 ---
+  neo4j-fog3-c:
+    image: neo4j:enterprise
+    hostname: fog3-c
+    container_name: fog3-c
+    networks:
+      sevilla:
+        aliases:
+          - neo4j-cluster-3
+    ports:
+      - "7483:7474"
+      - "7696:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_dbms_security_cluster__status__auth__enabled: "false"
+
+      # Clustering
+      NEO4J_initial_server_mode__constraint: PRIMARY
+      NEO4J_dbms_cluster_endpoints: fog3-a:6000, fog3-b:6000, fog3-c:6000
+      NEO4J_initial_dbms_automatically__enable__free__servers: "true"
+
+      # Habilita TLS en el conector Bolt
+      NEO4J_server_bolt_tls__level: OPTIONAL
+
+      # Define la SSL policy "bolt" usando PEM
+      NEO4J_dbms_ssl_policy_bolt_enabled: "true"
+      NEO4J_dbms_ssl_policy_bolt_base__directory: /var/lib/neo4j/certificates/bolt
+      NEO4J_dbms_ssl_policy_bolt_private__key: private.key
+      NEO4J_dbms_ssl_policy_bolt_public__certificate: public.crt
+      NEO4J_dbms_ssl_policy_bolt_client__auth: NONE
+
+      # Bolt (client-side routing depende de estas direcciones)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: fog3-c:7687
+
+      #Direcciones intra-cluster (interno de Docker)
+      NEO4J_server_cluster_listen__address: 0.0.0.0:6000
+      NEO4J_server_cluster_advertised__address: fog3-c:6000
+
+      NEO4J_server_cluster_raft_listen__address: 0.0.0.0:7000
+      NEO4J_server_cluster_raft_advertised__address: fog3-c:7000
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7483
+
+    volumes:
+      - ./data/fog3-c:/data
+      - ./logs/fog3-c:/logs
+      - ./import:/import
+      - ./certs/bolt/fog3-c:/var/lib/neo4j/certificates/bolt
+
+  # --- SERVIDOR COMPOSITE: Contiene la base de datos compuesta ---
+  neo4j-composite:
+    image: neo4j:enterprise
+    hostname: composite
+    container_name: composite
+    networks:
+      - sevilla
+    ports:
+      - "7484:7474"
+      - "7697:7687"
+    environment:
+      NEO4J_AUTH: neo4j/password
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+
+      # Instalar plugins automáticamente y permitir su uso completo
+      #NEO4J_PLUGINS: '["graph-data-science"]'
+
+      #NEO4J_dbms_security_procedures_unrestricted: gds.*
+      #NEO4J_dbms_security_procedures_allowlist: gds.*
+
+      # Bolt propio del composite (para conectarte desde host con neo4j://)
+      NEO4J_server_bolt_listen__address: 0.0.0.0:7687
+      NEO4J_server_bolt_advertised__address: composite:7687
+
+      # Http (solo HUI)
+      NEO4J_server_http_advertised__address: localhost:7484
+
+      # Configuración para el keystore
+      NEO4J_dbms_security_keystore_path: /var/lib/neo4j/certificates/keystore.jks
+      NEO4J_dbms_security_keystore_password: password
+      NEO4J_dbms_security_key_name: neo4j
+
+    volumes:
+      - ./data/composite:/data
+      - ./logs/composite:/logs
+      #- ./plugins:/plugins
+      - ./certs/composite:/var/lib/neo4j/certificates
+
+  # --- SERVIDORES PROXY-1: Interfaz común de entrada al nodo Fog1 ---
+  ha-proxy-1:
+    image: haproxy:latest
+    hostname: ha-proxy-1
+    container_name: ha-proxy-1
+    volumes:
+      - ./scripts/fog1/haproxy1.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - sevilla
+    depends_on:
+      # Hasta que no se inicien los nodos del cluster no se inicia el proxy (secuencia logica)
+      - neo4j-fog1-a
+      - neo4j-fog1-b
+      - neo4j-fog1-c
+
+  # --- SERVIDORES PROXY-2: Interfaz común de entrada al nodo Fog2 ---
+  ha-proxy-2:
+    image: haproxy:latest
+    hostname: ha-proxy-2
+    container_name: ha-proxy-2
+    volumes:
+      - ./scripts/fog2/haproxy2.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - sevilla
+    depends_on:
+      # Hasta que no se inicien los nodos del cluster no se inicia el proxy (secuencia logica)
+      - neo4j-fog2-a
+      - neo4j-fog2-b
+      - neo4j-fog2-c
+
+  # --- SERVIDORES PROXY-3: Interfaz común de entrada al nodo Fog3 ---
+  ha-proxy-3:
+    image: haproxy:latest
+    hostname: ha-proxy-3
+    container_name: ha-proxy-3
+    volumes:
+      - ./scripts/fog3/haproxy3.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - sevilla
+    depends_on:
+      # Hasta que no se inicien los nodos del cluster no se inicia el proxy (secuencia logica)
+      - neo4j-fog3-a
+      - neo4j-fog3-b
+      - neo4j-fog3-c
+
+  # --- CLIENTE neo4j-dev-iomt: Simula el dispositivo médico para el envío de datos ---
+  neo4j-dev-iomt:
+    image: neo4j:enterprise
+    hostname: neo4j-dev-iomt
+    container_name: neo4j-dev-iomt
+    networks:
+      - sevilla
+    environment:
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+
+    # Sirve para mantener el contenedor encendido sin arrancar ninguna base de datos
+    entrypoint: ["tail", "-f", "/dev/null"]
+    volumes:
+      - ./scripts:/var/lib/neo4j/scripts
+      #- ./import:/var/lib/neo4j/import
+
+  # --- CONTENEDOR DE CONFIGURACIÓN AUTOMÁTICA ---
+  neo4j-setup:
+    image: python:3.11-slim
+    container_name: neo4j-setup
+    networks:
+      - sevilla
+    volumes:
+      - ./scripts:/scripts
+    command: >
+      bash -c "pip install neo4j && echo 'Entorno listo' && tail -f /dev/null"
+    depends_on:
+      - neo4j-fog1-a
+      - neo4j-fog2-a
+      - neo4j-fog3-a
+      - neo4j-composite
