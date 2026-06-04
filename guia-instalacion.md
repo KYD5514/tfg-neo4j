@@ -27,7 +27,8 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
    scripts/fogX/gen-certs-clusterX.sh
    ```
 
-   ```docker run --rm -v "${PWD}/certs/composite:/tmp/certs" eclipse-temurin:17-jre keytool -genseckey -keyalg AES -keysize 256 -storetype pkcs12 -keystore /tmp/certs/keystore.jks -alias neo4j -storepass password -keypass password
+   ```bash
+   docker run --rm -v "${PWD}/certs/composite:/tmp/certs" eclipse-temurin:17-jre keytool -genseckey -keyalg AES -keysize 256 -storetype pkcs12 -keystore /tmp/certs/keystore.jks -alias neo4j -storepass password -keypass password
 
    ```
 
@@ -39,17 +40,20 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 
 4. **Creación de las bases de datos:**
 
-   ```docker exec -it neo4j-setup python ./scripts/setup/setup_dbs.py
+   ```bash
+   docker exec -it neo4j-setup python ./scripts/setup/setup_dbs.py
 
    ```
 
 5. **Poblar las bases de datos de cada nodo Fog desde el contenedor neo4j-dev-iomt:**
 
-   ```docker exec -it neo4j-dev-iomt bash
+   ```bash
+   docker exec -it neo4j-dev-iomt bash
 
    ```
 
-   ```cypher-shell -a neo4j://ha-proxy-X:7687 -u neo4j -p password -d fogX -f ./scripts/fogX/poblar_fogX.cypher
+   ```bash
+   cypher-shell -a neo4j://ha-proxy-X:7687 -u neo4j -p password -d fogX -f ./scripts/fogX/poblar_fogX.cypher
 
    ```
 
@@ -114,5 +118,3 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
     └── graph-data-science.jar
 
 ```
-
----
