@@ -80,7 +80,7 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 │   │   └── keystore.jks
 ├── datasets
 │   ├── synthea_sample_data_csv_latest_original.zip
-│   └── synthea_sample_data_csv_latest_reducido.zip
+│   └── synthea_sample_data_csv_latest_usado.zip
 ├── import
 │   ├── allergies.csv
 │   └── careplans.csv
@@ -116,21 +116,3 @@ Esta guía explica cómo desplegar y probar el entorno Docker que integra Neo4j 
 ```
 
 ---
-
-## 📄 Notas importantes
-
-- Para reiniciar el proyecto por algún motivo, el comando a ejecutar es:
-
-  ```bash
-  docker-compose down -v
-  ```
-
-  Esto borrará también los volúmenes y los datos guardados.
-
-- Si se actulizan los `.csv`, se debe volver a ejecutar los scripts correspondientes dejando la linea de eliminación para evitar errores.
-
-- En caso de perder algún tipo de conexión, por ejemplo perder acceso a neo4j o al control center de Kafka, probar primero volver a ejecutar:
-
-  ```bash
-  docker-compose up -d
-  ```
